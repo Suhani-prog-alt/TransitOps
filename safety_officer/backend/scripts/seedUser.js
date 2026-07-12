@@ -1,4 +1,4 @@
-require('dotenv').config({ path: '../.env' });
+require('dotenv').config();
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
@@ -36,13 +36,10 @@ const usersToSeed = [
 
 const seedUsers = async () => {
     try {
-        await mongoose.connect(process.env.MONGO_URI, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true
-        });
+        await mongoose.connect(process.env.MONGO_URI);
 
         // Clear existing users to prevent duplicate errors while testing
-        await User.deleteMany({});
+        await User.deleteMany({ role: 'Safety Officer' });
         console.log('Cleared existing users.');
 
         for (let userData of usersToSeed) {

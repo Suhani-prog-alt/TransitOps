@@ -16,7 +16,7 @@ const seedData = async () => {
     console.log('Connected to MongoDB for seeding...');
 
     // Clear existing data
-    await User.deleteMany({});
+    await User.deleteMany({ role: 'Fleet Manager' });
     await Vehicle.deleteMany({});
     await Maintenance.deleteMany({});
     await Alert.deleteMany({});

@@ -19,7 +19,8 @@ export function Login() {
       await login(email, password);
       navigate('/');
     } catch (err) {
-      setError('Invalid credentials.');
+      const errorMsg = err.response?.data?.msg || err.message || 'Invalid credentials.';
+      setError(errorMsg);
     }
   };
 

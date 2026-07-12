@@ -30,7 +30,7 @@ const EXPENSE_CATEGORIES = ['Maintenance', 'Repair', 'Insurance', 'Toll', 'Misce
 const seedData = async () => {
   try {
     // Clear Collections
-    await User.deleteMany();
+    await User.deleteMany({ role: { $in: ['Financial Analyst', 'Admin'] } });
     await FuelLog.deleteMany();
     await Expense.deleteMany();
     await Report.deleteMany();

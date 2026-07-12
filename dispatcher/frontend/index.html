@@ -12,7 +12,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <title>TransitOps - Smart Transport Operations Platform</title>
-  </head>
+    <script>
+    const params = new URLSearchParams(window.location.search);
+    const urlToken = params.get('token');
+    if (urlToken) {
+      localStorage.setItem('token', urlToken);
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  </script>
+</head>
   <body class="bg-[#0b132b] text-[#f3f4f6]">
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>

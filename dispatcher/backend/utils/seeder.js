@@ -19,7 +19,7 @@ const seedData = async () => {
     console.log('Database is empty. Seeding default data...');
 
     // 2. Clear anything existing
-    await User.deleteMany();
+    await User.deleteMany({ role: 'Dispatcher' });
     await Vehicle.deleteMany();
     await Driver.deleteMany();
     await Trip.deleteMany();

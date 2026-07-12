@@ -16,7 +16,15 @@
         font-family: 'Outfit', 'Inter', sans-serif;
       }
     </style>
-  </head>
+    <script>
+    const params = new URLSearchParams(window.location.search);
+    const urlToken = params.get('token');
+    if (urlToken) {
+      localStorage.setItem('token', urlToken);
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  </script>
+</head>
   <body class="bg-background text-gray-100 overflow-x-hidden antialiased">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>

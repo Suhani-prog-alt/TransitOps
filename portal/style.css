@@ -1,0 +1,219 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Comic Neue', cursive, sans-serif;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+.split-container {
+  display: flex;
+  height: 100%;
+  width: 100%;
+}
+
+/* Left Panel */
+.left-panel {
+  flex: 1;
+  background-color: #ced4d8;
+  padding: 60px;
+  display: flex;
+  flex-direction: column;
+  color: #2f2f2f;
+}
+
+.logo-section {
+  margin-bottom: 60px;
+}
+
+.logo-icon {
+  width: 48px;
+  height: 48px;
+  background-color: transparent;
+  border: 2px solid #2527b4;
+  background-image: radial-gradient(#254bb4 2px, transparent 2px);
+  background-size: 6px 6px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+}
+
+.logo-section h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  color: #555;
+}
+
+.roles-info {
+  margin-top: 40px;
+}
+
+.roles-info h3 {
+  font-size: 1.3rem;
+  margin-bottom: 15px;
+}
+
+.roles-info ul {
+  list-style: none;
+}
+
+.roles-info li {
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.roles-info li::before {
+  content: "•";
+  color: #252fb4;
+  font-size: 1.5rem;
+  margin-right: 10px;
+}
+
+.footer-left {
+  margin-top: auto;
+  font-size: 0.8rem;
+  color: #888;
+  letter-spacing: 1px;
+}
+
+/* Right Panel */
+.right-panel {
+  flex: 1;
+  background-color: #121212;
+  color: #eaeaea;
+  padding: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-box {
+  width: 100%;
+  max-width: 400px;
+}
+
+.login-box h2 {
+  font-size: 2rem;
+  margin-bottom: 5px;
+  font-weight: 700;
+}
+
+.login-subtitle {
+  font-size: 1rem;
+  color: #888;
+  margin-bottom: 40px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.85rem;
+  margin-bottom: 8px;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.form-group input, .form-group select {
+  width: 100%;
+  padding: 12px 15px;
+  background-color: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 6px;
+  color: #fff;
+  font-family: inherit;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.form-group input:focus, .form-group select:focus {
+  border-color: #b46b25;
+}
+
+.form-group select {
+  appearance: none;
+  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23777%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+  background-repeat: no-repeat;
+  background-position: right 15px top 50%;
+  background-size: 10px auto;
+}
+
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  font-size: 0.9rem;
+}
+
+.remember-me {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.remember-me input {
+  margin-right: 8px;
+  accent-color: #22c55e;
+}
+
+.forgot-password {
+  color: #3b82f6;
+  text-decoration: none;
+}
+
+.forgot-password:hover {
+  text-decoration: underline;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 14px;
+  background-color: #b46b25;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-family: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-bottom: 40px;
+}
+
+.submit-btn:hover {
+  background-color: #9c5c1f;
+}
+
+.access-info {
+  font-size: 0.85rem;
+  color: #888;
+}
+
+.access-info p {
+  margin-bottom: 10px;
+}
+
+.access-info ul {
+  list-style: none;
+}
+
+.access-info li {
+  margin-bottom: 5px;
+}
