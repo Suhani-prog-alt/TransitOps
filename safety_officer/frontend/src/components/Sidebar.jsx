@@ -5,26 +5,27 @@ import {
   Users, 
   Map, 
   Wrench, 
-  Fuel, 
   BarChart, 
-  TrendingUp,
   Settings,
   ShieldCheck,
-  HeadphonesIcon
+  HeadphonesIcon,
+  ShieldAlert,
+  FileText,
+  UserCheck
 } from "lucide-react"
 
 const navItems = [
-  { section: "OPERATIONS", items: [
+  { section: "SAFETY & COMPLIANCE", items: [
     { name: "Dashboard", path: "/", icon: <LayoutDashboard size={18} /> },
+    { name: "Driver Management", path: "/drivers", icon: <Users size={18} /> },
+    { name: "License Monitoring", path: "/licenses", icon: <FileText size={18} /> },
+    { name: "Driver Eligibility", path: "/eligibility", icon: <UserCheck size={18} /> },
+    { name: "Safety Reports", path: "/reports", icon: <ShieldAlert size={18} /> },
+  ]},
+  { section: "READ ONLY", items: [
     { name: "Vehicles", path: "/vehicles", icon: <Truck size={18} /> },
-    { name: "Drivers", path: "/drivers", icon: <Users size={18} /> },
     { name: "Trips", path: "/trips", icon: <Map size={18} /> },
     { name: "Maintenance", path: "/maintenance", icon: <Wrench size={18} /> },
-    { name: "Fuel & Expenses", path: "/expenses", icon: <Fuel size={18} /> },
-  ]},
-  { section: "ANALYTICS", items: [
-    { name: "Reports", path: "/reports", icon: <BarChart size={18} /> },
-    { name: "Analytics", path: "/analytics", icon: <TrendingUp size={18} /> },
   ]},
   { section: "ADMIN", items: [
     { name: "Users & Roles", path: "/users", icon: <ShieldCheck size={18} /> },
