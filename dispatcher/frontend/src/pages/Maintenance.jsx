@@ -114,136 +114,7 @@ const Maintenance = ({ apiFetch }) => {
           <h2 className="text-xl font-bold text-white">Maintenance Log</h2>
           <p className="text-xs text-[#9ca3af]">Track scheduled checkups, active garage repairs, and vehicle uptime.</p>
         </div>
-        <button
-          onClick={() => {
-            setError('');
-            setShowAddForm(!showAddForm);
-          }}
-          className="bg-[#5bc0be] text-[#0b132b] font-bold px-4 py-2.5 rounded-xl hover:bg-[#48a9a7] hover:scale-105 transition-all flex items-center gap-2 cursor-pointer shadow-lg shadow-[#5bc0be]/10"
-        >
-          <Plus className="h-5 w-5" />
-          <span>Log Maintenance</span>
-        </button>
       </div>
-
-      {success && (
-        <div className="bg-green-500/10 border border-green-500/30 text-green-200 text-sm p-4 rounded-xl flex items-center gap-2">
-          <ShieldCheck className="h-5 w-5 text-green-400" />
-          <span>{success}</span>
-        </div>
-      )}
-
-      {/* Add Form */}
-      {showAddForm && (
-        <div className="bg-[#1c2541]/80 border border-[#3a506b] rounded-2xl p-6 shadow-xl animate-fade-in">
-          <h3 className="font-bold text-white uppercase tracking-wider text-xs mb-4 flex items-center gap-2">
-            <Wrench className="h-4.5 w-4.5 text-[#5bc0be]" />
-            <span>Create Maintenance Record</span>
-          </h3>
-
-          {error && (
-            <div className="bg-red-500/10 border border-red-500/30 text-red-200 text-xs p-3.5 rounded-xl flex items-start gap-2 mb-4">
-              <ShieldAlert className="h-4.5 w-4.5 text-red-400 shrink-0 mt-0.5" />
-              <span>{error}</span>
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            <div>
-              <label className="block text-[10px] font-bold text-[#9ca3af] uppercase tracking-wider mb-1.5">Select Vehicle</label>
-              <select
-                value={vehicleId}
-                onChange={(e) => setVehicleId(e.target.value)}
-                className="w-full bg-[#0b132b] border border-[#3a506b] text-white px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#5bc0be]"
-                required
-              >
-                <option value="">-- Select Vehicle --</option>
-                {availableVehiclesForMaint.map(v => (
-                  <option key={v._id} value={v._id}>
-                    {v.registrationNumber} - {v.name} (Current Status: {v.status})
-                  </option>
-                ))}
-              </select>
-            </div>
-            
-            <div>
-              <label className="block text-[10px] font-bold text-[#9ca3af] uppercase tracking-wider mb-1.5">Service Type</label>
-              <select
-                value={serviceType}
-                onChange={(e) => setServiceType(e.target.value)}
-                className="w-full bg-[#0b132b] border border-[#3a506b] text-white px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#5bc0be]"
-              >
-                <option value="Oil Change">Oil Change</option>
-                <option value="Brake Inspection">Brake Inspection</option>
-                <option value="Tire Replacement">Tire Replacement</option>
-                <option value="Engine Check">Engine Check</option>
-                <option value="General Service">General Service</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-[10px] font-bold text-[#9ca3af] uppercase tracking-wider mb-1.5">Scheduled Date</label>
-              <input
-                type="date"
-                value={scheduledDate}
-                onChange={(e) => setScheduledDate(e.target.value)}
-                className="w-full bg-[#0b132b] border border-[#3a506b] text-white px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#5bc0be]"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-[10px] font-bold text-[#9ca3af] uppercase tracking-wider mb-1.5">Est/Actual Cost (₹)</label>
-              <input
-                type="number"
-                value={cost}
-                onChange={(e) => setCost(e.target.value)}
-                placeholder="e.g. 5000"
-                className="w-full bg-[#0b132b] border border-[#3a506b] text-white px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#5bc0be]"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-[10px] font-bold text-[#9ca3af] uppercase tracking-wider mb-1.5">Status</label>
-              <select
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
-                className="w-full bg-[#0b132b] border border-[#3a506b] text-white px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#5bc0be]"
-              >
-                <option value="Active">Active (Send to Shop Immediately)</option>
-                <option value="Scheduled">Scheduled (Plan for Later)</option>
-              </select>
-            </div>
-
-            <div className="md:col-span-3">
-              <label className="block text-[10px] font-bold text-[#9ca3af] uppercase tracking-wider mb-1.5">Service Notes</label>
-              <textarea
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder="Describe details like engine warnings, components replaced, mechanic name..."
-                className="w-full bg-[#0b132b] border border-[#3a506b] text-white px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#5bc0be] h-20"
-              />
-            </div>
-
-            <div className="md:col-span-3 flex justify-end gap-3 pt-3">
-              <button
-                type="button"
-                onClick={() => setShowAddForm(false)}
-                className="bg-[#0b132b] text-white border border-[#3a506b] px-4 py-2 rounded-xl hover:bg-[#3a506b]/30 cursor-pointer"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="bg-[#5bc0be] text-[#0b132b] font-bold px-6 py-2 rounded-xl hover:bg-[#48a9a7] cursor-pointer"
-              >
-                Log Record
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
 
       {/* Maintenance Logs Table */}
       <div className="bg-[#1c2541]/70 border border-[#3a506b]/40 rounded-2xl shadow-lg overflow-x-auto">
@@ -255,8 +126,7 @@ const Maintenance = ({ apiFetch }) => {
               <th className="p-4">Scheduled/Active Date</th>
               <th className="p-4">Cost</th>
               <th className="p-4">Status</th>
-              <th className="p-4">Notes</th>
-              <th className="p-4 text-right">Actions</th>
+              <th className="p-4 font-bold">Notes</th>
             </tr>
           </thead>
           <tbody className="text-xs divide-y divide-[#3a506b]/20">
@@ -281,30 +151,11 @@ const Maintenance = ({ apiFetch }) => {
                   <td className="p-4 text-[#9ca3af] max-w-[200px] truncate" title={log.notes}>
                     {log.notes || '—'}
                   </td>
-                  <td className="p-4 text-right">
-                    {log.status === 'Active' ? (
-                      <button
-                        onClick={() => handleCloseMaintenance(log._id)}
-                        className="bg-green-500 hover:bg-green-600 text-[#0b132b] font-bold px-3 py-1 rounded-lg flex items-center gap-1 cursor-pointer transition-all hover:scale-105 inline-flex"
-                      >
-                        <CheckCircle2 className="h-3.5 w-3.5" />
-                        <span>Close Maint</span>
-                      </button>
-                    ) : log.status === 'Completed' ? (
-                      <span className="text-[10px] text-green-400 font-bold uppercase flex items-center gap-1 pr-3 inline-flex">
-                        <CheckCircle2 className="h-3.5 w-3.5" /> Completed
-                      </span>
-                    ) : (
-                      <span className="text-[10px] text-blue-400 font-semibold uppercase flex items-center gap-1 pr-3 inline-flex">
-                        <Clock className="h-3.5 w-3.5" /> Planned
-                      </span>
-                    )}
-                  </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="7" className="p-8 text-center text-[#9ca3af]">No maintenance logs found. Click "Log Maintenance" to schedule repairs.</td>
+                <td colSpan="6" className="p-8 text-center text-[#9ca3af]">No maintenance logs found.</td>
               </tr>
             )}
           </tbody>
