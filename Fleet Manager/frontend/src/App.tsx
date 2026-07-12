@@ -16,21 +16,6 @@ import { Alerts } from './pages/Alerts';
 import { Settings } from './pages/Settings';
 
 const ProtectedRoute = () => {
-  const { token, loading } = useAuth();
-
-  if (loading) {
-    return (
-      <div className="flex h-screen w-screen items-center justify-center bg-[#0B0F19]">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand-blue border-t-transparent"></div>
-      </div>
-    );
-  }
-
-  if (!token) {
-    window.location.href = "http://localhost:8080";
-    return null;
-  }
-
   return <Outlet />;
 };
 

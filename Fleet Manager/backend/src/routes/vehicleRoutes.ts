@@ -4,7 +4,8 @@ import { authenticateJWT } from '../middleware/auth';
 
 const router = Router();
 
-router.use(authenticateJWT);
+// Bypass JWT authentication for hackathon demo
+// router.use(authenticateJWT);
 
 router.get('/', getVehicles);
 router.get('/:id', getVehicleById);

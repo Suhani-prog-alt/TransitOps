@@ -24,10 +24,10 @@ API.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      // Clear local storage and redirect to central portal if unauthorized
+      // Clear local storage but DO NOT redirect, allowing dashboard to be viewable
       localStorage.removeItem('transitops_token');
       localStorage.removeItem('transitops_user');
-      window.location.href = 'http://localhost:8080';
+      console.warn("Unauthorized access - token cleared, but bypassing redirect for hackathon.");
     }
     return Promise.reject(error);
   }
