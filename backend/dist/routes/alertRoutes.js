@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const alertController_1 = require("../controllers/alertController");
+const auth_1 = require("../middleware/auth");
+const router = (0, express_1.Router)();
+router.use(auth_1.authenticateJWT);
+router.get('/', alertController_1.getAlerts);
+router.post('/scan', alertController_1.scanForAlerts);
+router.put('/:id/resolve', alertController_1.resolveAlert);
+exports.default = router;

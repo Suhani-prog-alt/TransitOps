@@ -1,0 +1,91 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base Styles */
+@layer base {
+  body {
+    @apply bg-background text-gray-100 antialiased selection:bg-brand-blue selection:text-white;
+  }
+}
+
+/* Glassmorphism Styles */
+.glass-card {
+  background: rgba(17, 25, 40, 0.65);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+.glass-card-hover {
+ @apply transition-all duration-300 hover:border-white/15 hover:bg-slate-900/70 hover:shadow-glow;
+}
+
+.glass-modal {
+  background: rgba(13, 19, 33, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 24px 64px 0 rgba(0, 0, 0, 0.6);
+}
+
+.glass-input {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  @apply rounded-xl px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-brand-blue focus:ring-1 focus:ring-brand-blue transition-all duration-200;
+}
+
+/* Premium Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0B0F19;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+  @apply transition-colors duration-200 hover:bg-white/20;
+}
+
+/* Custom Sparkline Animations */
+@keyframes spark-fade {
+  from { opacity: 0; stroke-dashoffset: 100; }
+  to { opacity: 1; stroke-dashoffset: 0; }
+}
+
+.sparkline-animate {
+  stroke-dasharray: 100;
+  animation: spark-fade 1.5s ease-out forwards;
+}
+
+/* Background Ambient Glows */
+.ambient-glow-blue {
+  position: absolute;
+  top: -10%;
+  left: 20%;
+  width: 40vw;
+  height: 40vw;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, rgba(0, 0, 0, 0) 70%);
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.ambient-glow-purple {
+  position: absolute;
+  bottom: -10%;
+  right: 10%;
+  width: 45vw;
+  height: 45vw;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.05) 0%, rgba(0, 0, 0, 0) 70%);
+  filter: blur(100px);
+  pointer-events: none;
+  z-index: -1;
+}
