@@ -16,7 +16,7 @@ const generateToken = (id) => {
 // @access  Public
 router.post('/register', async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, role } = req.body;
 
     // Check if user exists
     const userExists = await User.findOne({ email });
@@ -29,7 +29,7 @@ router.post('/register', async (req, res) => {
       name,
       email,
       password,
-      role: 'Dispatcher' // Lock role to Dispatcher
+      role: role || 'Dispatcher'
     });
 
     res.status(201).json({

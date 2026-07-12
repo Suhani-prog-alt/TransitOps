@@ -11,7 +11,7 @@ const seedData = async () => {
   try {
     // 1. Check if seeded already
     const userCount = await User.countDocuments();
-    if (userCount > 0) {
+    if (userCount >= 4) {
       console.log('Database already seeded. Skipping seeder...');
       return;
     }
@@ -27,16 +27,12 @@ const seedData = async () => {
     await MaintenanceLog.deleteMany();
     await FuelLog.deleteMany();
 
-    // 3. Create Users
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash('password123', salt);
-
-    const dispatcher = await User.create({
-      name: 'Rohit Sharma',
-      email: 'dispatcher@transitops.com',
-      password: 'password123', // Model hook encrypts if user.save is called, but since we use create, let's pass plain password because our model has .pre('save') which will hash it!
-      role: 'Dispatcher'
-    });
+    await User.create([
+      { name: 'D-1', email: 'dispatcher@transitops.com', password: 'password123', role: 'Dispatcher' },
+      { name: 'FM-1', email: 'fleet@transitops.com', password: 'password123', role: 'Fleet Manager' },
+      { name: 'SO-1', email: 'safety@transitops.com', password: 'password123', role: 'Safety Officer' },
+      { name: 'FA-1', email: 'analyst@transitops.com', password: 'password123', role: 'Financial Analyst' }
+    ]);
 
     // 4. Create Vehicles
     const vehiclesData = [

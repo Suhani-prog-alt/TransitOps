@@ -14,6 +14,8 @@ import {
 const Sidebar = ({ activeTab, setActiveTab }) => {
   const { user, logout } = useContext(AuthContext);
 
+  const role = user?.role || 'Dispatcher';
+
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'trips', label: 'Trips Workspace', icon: Route },
@@ -22,7 +24,21 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
     { id: 'maintenance', label: 'Maintenance Log', icon: Wrench },
     { id: 'expenses', label: 'Fuel & Expenses', icon: Fuel },
     { id: 'reports', label: 'Reports & Analytics', icon: FileBarChart2 }
-  ];
+  ].filter(item => {
+    if (role === 'Dispatcher') {
+      return true;
+    }
+    if (role === 'Fleet Manager') {
+      return ['dashboard', 'vehicles', 'drivers', 'maintenance', 'expenses', 'reports'].includes(item.id);
+    }
+    if (role === 'Safety Officer') {
+      return ['dashboard', 'drivers', 'trips', 'reports'].includes(item.id);
+    }
+    if (role === 'Financial Analyst') {
+      return ['dashboard', 'expenses', 'reports'].includes(item.id);
+    }
+    return true;
+  });
 
   return (
     <aside className="w-64 bg-[#0e1731] border-r border-[#1c2541] flex flex-col min-h-screen">
@@ -34,7 +50,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
         </div>
         <div>
           <h2 className="text-xl font-bold tracking-wider text-white">TRANSIT<span className="text-[#5bc0be]">OPS</span></h2>
-          <p className="text-[10px] text-[#9ca3af] uppercase tracking-widest font-semibold">Dispatcher Hub</p>
+          <p className="text-[10px] text-[#5bc0be] uppercase tracking-widest font-bold">{role} Hub</p>
         </div>
       </div>
 

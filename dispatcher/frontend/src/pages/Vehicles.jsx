@@ -1,7 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Plus, Truck, ShieldAlert, ShieldCheck } from 'lucide-react';
+import { AuthContext } from '../context/AuthContext';
 
 const Vehicles = ({ apiFetch }) => {
+  const { user } = useContext(AuthContext);
+  const isFleetManager = user?.role === 'Fleet Manager';
+
   const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -91,7 +95,131 @@ const Vehicles = ({ apiFetch }) => {
           <h2 className="text-xl font-bold text-white">Vehicles Registry</h2>
           <p className="text-xs text-[#9ca3af]">Manage registrations, vehicle categories, and view fleet capacities.</p>
         </div>
+        
+        {/* Conditional Register Button */}
+        {isFleetManager && (
+          <button
+            onClick={() => {
+              setError('');
+              setShowAddForm(!showAddForm);
+            }}
+            className="bg-[#5bc0be] text-[#0b132b] font-bold px-4 py-2.5 rounded-xl hover:bg-[#48a9a7] hover:scale-105 transition-all flex items-center gap-2 cursor-pointer shadow-lg shadow-[#5bc0be]/10"
+          >
+            <Plus className="h-5 w-5" />
+            <span>Register Vehicle</span>
+          </button>
+        )}
       </div>
+
+      {success && (
+        <div className="bg-green-500/10 border border-green-500/30 text-green-200 text-sm p-4 rounded-xl flex items-center gap-2 animate-fade-in">
+          <ShieldCheck className="h-5 w-5 text-green-400" />
+          <span>{success}</span>
+        </div>
+      )}
+
+      {/* Conditional Add Form */}
+      {isFleetManager && showAddForm && (
+        <div className="bg-[#1c2541]/80 border border-[#3a506b] rounded-2xl p-6 shadow-xl animate-fade-in">
+          <h3 className="font-bold text-white uppercase tracking-wider text-xs mb-4 flex items-center gap-2">
+            <Truck className="h-4.5 w-4.5 text-[#5bc0be]" />
+            <span>Add Vehicle details</span>
+          </h3>
+
+          {error && (
+            <div className="bg-red-500/10 border border-red-500/30 text-red-200 text-xs p-3.5 rounded-xl flex items-start gap-2 mb-4">
+              <ShieldAlert className="h-4.5 w-4.5 text-red-400 shrink-0 mt-0.5" />
+              <span>{error}</span>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div>
+              <label className="block text-[10px] font-bold text-[#9ca3af] uppercase tracking-wider mb-1.5">Registration Number</label>
+              <input
+                type="text"
+                value={registrationNumber}
+                onChange={(e) => setRegistrationNumber(e.target.value)}
+                placeholder="e.g. VAN-05"
+                className="w-full bg-[#0b132b] border border-[#3a506b] text-white px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#5bc0be]"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-[10px] font-bold text-[#9ca3af] uppercase tracking-wider mb-1.5">Name/Model</label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="e.g. Ford Transit"
+                className="w-full bg-[#0b132b] border border-[#3a506b] text-white px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#5bc0be]"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-[10px] font-bold text-[#9ca3af] uppercase tracking-wider mb-1.5">Type</label>
+              <select
+                value={type}
+                onChange={(e) => setType(e.target.value)}
+                className="w-full bg-[#0b132b] border border-[#3a506b] text-white px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#5bc0be]"
+              >
+                <option value="Van">Van</option>
+                <option value="Truck">Truck</option>
+                <option value="Sedan">Sedan</option>
+                <option value="SUV">SUV</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-[10px] font-bold text-[#9ca3af] uppercase tracking-wider mb-1.5">Max capacity (kg)</label>
+              <input
+                type="number"
+                value={maxCapacity}
+                onChange={(e) => setMaxCapacity(e.target.value)}
+                placeholder="e.g. 500"
+                className="w-full bg-[#0b132b] border border-[#3a506b] text-white px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#5bc0be]"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-[10px] font-bold text-[#9ca3af] uppercase tracking-wider mb-1.5">Starting Odometer (km)</label>
+              <input
+                type="number"
+                value={odometer}
+                onChange={(e) => setOdometer(e.target.value)}
+                placeholder="e.g. 10000"
+                className="w-full bg-[#0b132b] border border-[#3a506b] text-white px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#5bc0be]"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-[10px] font-bold text-[#9ca3af] uppercase tracking-wider mb-1.5">Acquisition Cost (₹)</label>
+              <input
+                type="number"
+                value={acquisitionCost}
+                onChange={(e) => setAcquisitionCost(e.target.value)}
+                placeholder="e.g. 25000"
+                className="w-full bg-[#0b132b] border border-[#3a506b] text-white px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#5bc0be]"
+                required
+              />
+            </div>
+            <div className="md:col-span-3 flex justify-end gap-3 pt-3">
+              <button
+                type="button"
+                onClick={() => setShowAddForm(false)}
+                className="bg-[#0b132b] text-white border border-[#3a506b] px-4 py-2 rounded-xl hover:bg-[#3a506b]/30 cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="bg-[#5bc0be] text-[#0b132b] font-bold px-6 py-2 rounded-xl hover:bg-[#48a9a7] cursor-pointer"
+              >
+                Register
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
 
       {/* Grid List */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -135,7 +263,7 @@ const Vehicles = ({ apiFetch }) => {
 
         {vehicles.length === 0 && (
           <div className="col-span-4 py-16 text-center text-[#9ca3af] bg-[#1c2541]/40 border border-[#3a506b]/20 rounded-2xl">
-            No vehicles registered. Click "Register Vehicle" to add your first one!
+            No vehicles registered.
           </div>
         )}
       </div>

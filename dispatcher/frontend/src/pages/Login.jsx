@@ -1,42 +1,58 @@
 import React, { useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
-import { Truck, ShieldAlert } from 'lucide-react';
+import { Truck, ShieldAlert, ShieldCheck, UserPlus, LogIn } from 'lucide-react';
 
 const Login = () => {
-  const { login, error: authError } = useContext(AuthContext);
-  const [email, setEmail] = useState('dispatcher@transitops.com');
-  const [password, setPassword] = useState('password123');
+  const { login, register, error: authError } = useContext(AuthContext);
+  
+  // Auth Mode: 'signin' or 'signup'
+  const [mode, setMode] = useState('signin');
+  
+  // Input Fields
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState(''); // Serves as the Employee ID (e.g. FA-1, D-1)
+  const [role, setRole] = useState('Dispatcher');
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
-  const handleSubmit = async (e) => {
+  const handleAuthSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setSuccess('');
 
-    const success = await login(email, password);
-    setLoading(false);
-    if (!success) {
-      setError(authError || 'Invalid email or password');
-    }
-  };
-
-  const handleQuickLogin = async () => {
-    setLoading(true);
-    setError('');
-    const success = await login('dispatcher@transitops.com', 'password123');
-    setLoading(false);
-    if (!success) {
-      setError('Quick login failed. Please ensure database has been seeded.');
+    if (mode === 'signin') {
+      const result = await login(email, password);
+      setLoading(false);
+      if (!result.success) {
+        setError(result.message || 'Invalid email or password');
+      }
+    } else {
+      if (!name.trim()) {
+        setError('Please specify an Employee ID / Name');
+        setLoading(false);
+        return;
+      }
+      
+      const result = await register(name.trim(), email, password, role);
+      setLoading(false);
+      if (result.success) {
+        setSuccess('Registration successful! Logging in...');
+      } else {
+        setError(result.message || 'Registration failed');
+      }
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0b132b] px-4">
+    <div className="min-h-screen flex items-center justify-center bg-[#0b132b] px-4 py-8">
       <div className="relative w-full max-w-md bg-[#1c2541]/80 backdrop-blur-md border border-[#3a506b] p-8 rounded-2xl shadow-2xl animate-fade-in">
         
-        {/* Logo Header */}
-        <div className="flex flex-col items-center mb-8">
+        {/* Header */}
+        <div className="flex flex-col items-center mb-6">
           <div className="bg-gradient-to-tr from-[#5bc0be] to-[#3a506b] p-3 rounded-xl mb-3 shadow-lg shadow-[#5bc0be]/20">
             <Truck className="h-8 w-8 text-[#0b132b] font-bold" />
           </div>
@@ -44,41 +60,125 @@ const Login = () => {
           <p className="text-[#9ca3af] text-sm mt-1">Smart Transport Operations Platform</p>
         </div>
 
+        {/* Modern Switcher Tabs */}
+        <div className="grid grid-cols-2 bg-[#0b132b] p-1 rounded-xl mb-6 border border-[#3a506b]/40">
+          <button
+            type="button"
+            onClick={() => {
+              setMode('signin');
+              setError('');
+              setSuccess('');
+            }}
+            className={`py-2 rounded-lg font-bold text-xs transition-all cursor-pointer ${
+              mode === 'signin' 
+                ? 'bg-[#5bc0be] text-[#0b132b] shadow-md' 
+                : 'text-[#9ca3af] hover:text-white'
+            }`}
+          >
+            Sign In (Login)
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setMode('signup');
+              setError('');
+              setSuccess('');
+            }}
+            className={`py-2 rounded-lg font-bold text-xs transition-all cursor-pointer ${
+              mode === 'signup' 
+                ? 'bg-[#5bc0be] text-[#0b132b] shadow-md' 
+                : 'text-[#9ca3af] hover:text-white'
+            }`}
+          >
+            Sign Up (Create Account)
+          </button>
+        </div>
+
         {/* Error Alert */}
         {(error || authError) && (
-          <div className="bg-red-500/10 border border-red-500/30 text-red-200 text-sm p-3 rounded-lg flex items-center gap-2 mb-6">
-            <ShieldAlert className="h-5 w-5 text-red-400 shrink-0" />
+          <div className="bg-red-500/10 border border-red-500/30 text-red-200 text-xs p-3.5 rounded-xl flex items-start gap-2 mb-5 animate-fade-in">
+            <ShieldAlert className="h-4.5 w-4.5 text-red-400 shrink-0 mt-0.5" />
             <span>{error || authError}</span>
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        {/* Success Alert */}
+        {success && (
+          <div className="bg-green-500/10 border border-green-500/30 text-green-200 text-xs p-3.5 rounded-xl flex items-start gap-2 mb-5 animate-fade-in">
+            <ShieldCheck className="h-4.5 w-4.5 text-green-400 shrink-0 mt-0.5" />
+            <span>{success}</span>
+          </div>
+        )}
+
+        {/* Forms Panel */}
+        <form onSubmit={handleAuthSubmit} className="space-y-4">
+          {mode === 'signup' && (
+            <>
+              {/* Role Selector Dropdown */}
+              <div className="animate-fade-in">
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#9ca3af] mb-1">
+                  Choose System Role
+                </label>
+                <select
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                  className="w-full bg-[#0b132b] border border-[#3a506b] text-white px-4 py-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#5bc0be] text-sm cursor-pointer"
+                  required
+                >
+                  <option value="Dispatcher">Dispatcher (Operations)</option>
+                  <option value="Fleet Manager">Fleet Manager (Assets)</option>
+                  <option value="Safety Officer">Safety Officer (Compliance)</option>
+                  <option value="Financial Analyst">Financial Analyst (Expenses)</option>
+                </select>
+              </div>
+
+              {/* Employee ID */}
+              <div className="animate-fade-in">
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#9ca3af] mb-1">
+                  Employee ID / Name (e.g. FA-1, D-1, FM-1)
+                </label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder={
+                    role === 'Dispatcher' ? 'e.g. D-1' :
+                    role === 'Fleet Manager' ? 'e.g. FM-1' :
+                    role === 'Safety Officer' ? 'e.g. SO-1' : 'e.g. FA-1'
+                  }
+                  className="w-full bg-[#0b132b] border border-[#3a506b] text-white px-4 py-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#5bc0be] text-sm"
+                  required
+                />
+              </div>
+            </>
+          )}
+
+          {/* Email Address */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-[#9ca3af] mb-1.5">
+            <label className="block text-xs font-bold uppercase tracking-wider text-[#9ca3af] mb-1">
               Email Address
             </label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-[#0b132b] border border-[#3a506b] text-white px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#5bc0be] focus:border-transparent transition-all"
-              placeholder="e.g. rohit@transitops.com"
+              placeholder={mode === 'signin' ? 'e.g. analyst@transitops.com' : 'your@email.com'}
+              className="w-full bg-[#0b132b] border border-[#3a506b] text-white px-4 py-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#5bc0be] text-sm"
               required
             />
           </div>
 
+          {/* Password */}
           <div>
-            <div className="flex justify-between items-center mb-1.5">
-              <label className="block text-xs font-semibold uppercase tracking-wider text-[#9ca3af]">
-                Password
-              </label>
-            </div>
+            <label className="block text-xs font-bold uppercase tracking-wider text-[#9ca3af] mb-1">
+              Password
+            </label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-[#0b132b] border border-[#3a506b] text-white px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#5bc0be] focus:border-transparent transition-all"
               placeholder="••••••••"
+              className="w-full bg-[#0b132b] border border-[#3a506b] text-white px-4 py-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#5bc0be] text-sm"
               required
             />
           </div>
@@ -86,31 +186,19 @@ const Login = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#5bc0be] text-[#0b132b] font-semibold py-3 rounded-xl hover:bg-[#48a9a7] hover:scale-[1.01] transition-all cursor-pointer shadow-md shadow-[#5bc0be]/10 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-[#5bc0be] text-[#0b132b] font-bold py-2.5 rounded-xl hover:bg-[#48a9a7] hover:scale-[1.01] transition-all cursor-pointer shadow-md disabled:opacity-50 text-sm flex items-center justify-center gap-2 mt-4"
           >
-            {loading ? 'Signing In...' : 'Sign In'}
+            {mode === 'signin' ? <LogIn className="h-4 w-4" /> : <UserPlus className="h-4 w-4" />}
+            <span>{loading ? 'Processing...' : mode === 'signin' ? 'Sign In' : 'Register & Log In'}</span>
           </button>
         </form>
 
-        <div className="relative flex py-5 items-center">
-          <div className="flex-grow border-t border-[#3a506b]/50"></div>
-          <span className="flex-shrink mx-4 text-[#9ca3af] text-xs uppercase tracking-wider">Demo Access</span>
-          <div className="flex-grow border-t border-[#3a506b]/50"></div>
+        <div className="text-center mt-5 text-[10px] text-[#9ca3af]">
+          {mode === 'signin' 
+            ? 'Sign in with your seeded employee credentials.' 
+            : 'Specify role and custom ID to create a new profile.'}
         </div>
 
-        <button
-          onClick={handleQuickLogin}
-          disabled={loading}
-          className="w-full bg-[#1c2541] text-white border border-[#3a506b] font-medium py-3 rounded-xl hover:bg-[#3a506b]/50 transition-all cursor-pointer"
-        >
-          Quick Login as Dispatcher (Rohit)
-        </button>
-
-        <div className="text-center mt-6">
-          <p className="text-xs text-[#9ca3af]">
-            Dispatcher Mode: Default credentials seeded automatically.
-          </p>
-        </div>
       </div>
     </div>
   );

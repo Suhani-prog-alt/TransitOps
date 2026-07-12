@@ -1,7 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Plus, Fuel, Wallet, ShieldAlert, ShieldCheck } from 'lucide-react';
+import { AuthContext } from '../context/AuthContext';
 
 const FuelExpenses = ({ apiFetch }) => {
+  const { user } = useContext(AuthContext);
+  const isFinancialAnalyst = user?.role === 'Financial Analyst';
+
   const [expenses, setExpenses] = useState([]);
   const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -13,8 +17,6 @@ const FuelExpenses = ({ apiFetch }) => {
   const [cost, setCost] = useState('');
   const [date, setDate] = useState('');
   const [description, setDescription] = useState('');
-  
-  // Specific Fuel details if type is Fuel
   const [liters, setLiters] = useState('');
 
   const [error, setError] = useState('');
@@ -23,16 +25,7 @@ const FuelExpenses = ({ apiFetch }) => {
   const loadData = async () => {
     try {
       setLoading(true);
-      
-      // Let's fetch expenses directly from our custom API
       const [expRes, vehiclesRes] = await Promise.all([
-        // Since we don't have a direct /api/expenses endpoint, let's build it or fetch dashboard costs.
-        // Wait, let's check: we can fetch all expenses or query them. Let's create an endpoint in backend for expenses or we can add it to the server. Wait, did we mount /api/expenses? No, we didn't. But we can fetch them via a new route or add it to server.js.
-        // Wait, did we write an expense route in server.js? We did not add `app.use('/api/expenses', ...)` but we did add models.
-        // Let's check server.js: we mounted routes `/api/auth`, `/api/vehicles`, `/api/drivers`, `/api/trips`, `/api/maintenance`, `/api/dashboard`. We didn't mount `/api/expenses`.
-        // Wait, can we create an expense routes file `/api/expenses` or fetch them from the dashboard or add them? It's very easy to add `/api/expenses` or simply include expenses in our routes, or add the `/api/expenses` route in the backend!
-        // Yes, let's create a route for expenses in the backend first so it's clean, or let's check how expenses are handled. Let's create `/api/expenses` in the backend so it's fully supported!
-        // Wait, let's look at that. That would be perfect. Let's write the frontend code first, assuming we will add `/api/expenses` in the backend. Yes, we can easily add `/api/expenses` in server.js.
         apiFetch('/api/expenses'),
         apiFetch('/api/vehicles')
       ]);
@@ -50,7 +43,6 @@ const FuelExpenses = ({ apiFetch }) => {
   };
 
   useEffect(() => {
-    // Wait, let's create the route backend first or after this. We will load the data.
     loadData();
   }, [apiFetch]);
 
@@ -107,7 +99,143 @@ const FuelExpenses = ({ apiFetch }) => {
           <h2 className="text-xl font-bold text-white">Fuel & Expense Management</h2>
           <p className="text-xs text-[#9ca3af]">Record fuel logs, toll fees, maintenance bills, and compute total running costs.</p>
         </div>
+        
+        {/* Conditional Record Expense Button */}
+        {isFinancialAnalyst && (
+          <button
+            onClick={() => {
+              setError('');
+              setShowAddForm(!showAddForm);
+            }}
+            className="bg-[#5bc0be] text-[#0b132b] font-bold px-4 py-2.5 rounded-xl hover:bg-[#48a9a7] hover:scale-105 transition-all flex items-center gap-2 cursor-pointer shadow-lg shadow-[#5bc0be]/10"
+          >
+            <Plus className="h-5 w-5" />
+            <span>Record Expense</span>
+          </button>
+        )}
       </div>
+
+      {success && (
+        <div className="bg-green-500/10 border border-green-500/30 text-green-200 text-sm p-4 rounded-xl flex items-center gap-2">
+          <ShieldCheck className="h-5 w-5 text-green-400" />
+          <span>{success}</span>
+        </div>
+      )}
+
+      {/* Conditional Add Form */}
+      {isFinancialAnalyst && showAddForm && (
+        <div className="bg-[#1c2541]/80 border border-[#3a506b] rounded-2xl p-6 shadow-xl animate-fade-in">
+          <h3 className="font-bold text-white uppercase tracking-wider text-xs mb-4 flex items-center gap-2">
+            <Fuel className="h-4.5 w-4.5 text-[#5bc0be]" />
+            <span>Record New Expense / Fuel Log</span>
+          </h3>
+
+          {error && (
+            <div className="bg-red-500/10 border border-red-500/30 text-red-200 text-xs p-3.5 rounded-xl flex items-start gap-2 mb-4">
+              <ShieldAlert className="h-4.5 w-4.5 text-red-400 shrink-0 mt-0.5" />
+              <span>{error}</span>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div>
+              <label className="block text-[10px] font-bold text-[#9ca3af] uppercase tracking-wider mb-1.5">Select Vehicle</label>
+              <select
+                value={vehicleId}
+                onChange={(e) => setVehicleId(e.target.value)}
+                className="w-full bg-[#0b132b] border border-[#3a506b] text-white px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#5bc0be]"
+                required
+              >
+                <option value="">-- Select Vehicle --</option>
+                {vehicles.filter(v => v.status !== 'Retired').map(v => (
+                  <option key={v._id} value={v._id}>
+                    {v.registrationNumber} - {v.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-[10px] font-bold text-[#9ca3af] uppercase tracking-wider mb-1.5">Expense Type</label>
+              <select
+                value={type}
+                onChange={(e) => setType(e.target.value)}
+                className="w-full bg-[#0b132b] border border-[#3a506b] text-white px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#5bc0be]"
+              >
+                <option value="Fuel">Fuel Addition</option>
+                <option value="Maintenance">Maintenance bill</option>
+                <option value="Toll">Toll Fee</option>
+                <option value="Other">Other Operational Cost</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-[10px] font-bold text-[#9ca3af] uppercase tracking-wider mb-1.5">Expense Cost (₹)</label>
+              <input
+                type="number"
+                value={cost}
+                onChange={(e) => setCost(e.target.value)}
+                placeholder="e.g. 3500"
+                className="w-full bg-[#0b132b] border border-[#3a506b] text-white px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#5bc0be]"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-[10px] font-bold text-[#9ca3af] uppercase tracking-wider mb-1.5">Transaction Date</label>
+              <input
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                className="w-full bg-[#0b132b] border border-[#3a506b] text-white px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#5bc0be]"
+                required
+              />
+            </div>
+
+            {type === 'Fuel' && (
+              <div>
+                <label className="block text-[10px] font-bold text-[#9ca3af] uppercase tracking-wider mb-1.5">Volume (Liters)</label>
+                <input
+                  type="number"
+                  value={liters}
+                  onChange={(e) => setLiters(e.target.value)}
+                  placeholder="e.g. 35"
+                  className="w-full bg-[#0b132b] border border-[#3a506b] text-white px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#5bc0be]"
+                  required={type === 'Fuel'}
+                />
+              </div>
+            )}
+
+            <div className={type === 'Fuel' ? 'md:col-span-1' : 'md:col-span-2'}>
+              <label className="block text-[10px] font-bold text-[#9ca3af] uppercase tracking-wider mb-1.5">Description / Invoice Notes</label>
+              <input
+                type="text"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="e.g. Shell Fuel Station / NH8 toll payment"
+                className="w-full bg-[#0b132b] border border-[#3a506b] text-white px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#5bc0be]"
+                required
+              />
+            </div>
+
+            <div className="md:col-span-3 flex justify-end gap-3 pt-3">
+              <button
+                type="button"
+                onClick={() => setShowAddForm(false)}
+                className="bg-[#0b132b] text-[#5bc0be] border border-[#3a506b] px-4 py-2 rounded-xl hover:bg-[#3a506b]/30 cursor-pointer text-xs"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="bg-[#5bc0be] text-[#0b132b] font-bold px-6 py-2 rounded-xl hover:bg-[#48a9a7] cursor-pointer text-xs"
+              >
+                Save Log
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
 
       {/* Expenses Table */}
       <div className="bg-[#1c2541]/70 border border-[#3a506b]/40 rounded-2xl shadow-lg overflow-x-auto">
@@ -146,7 +274,7 @@ const FuelExpenses = ({ apiFetch }) => {
                     {e.type === 'Fuel' ? (
                       <span className="flex items-center gap-1">
                         <Fuel className="h-3.5 w-3.5 text-[#5bc0be]" />
-                        {expenses.find(x => x._id === e._id && x.liters) || '38'} L {/* default mock helper */}
+                        {e.liters || '38'} L
                       </span>
                     ) : '—'}
                   </td>
@@ -154,7 +282,7 @@ const FuelExpenses = ({ apiFetch }) => {
               ))
             ) : (
               <tr>
-                <td colSpan="6" className="p-8 text-center text-[#9ca3af]">No expenses recorded. Click "Record Expense" to add entries.</td>
+                <td colSpan="6" className="p-8 text-center text-[#9ca3af]">No expenses recorded.</td>
               </tr>
             )}
           </tbody>

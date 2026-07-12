@@ -53,14 +53,40 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('token', data.token);
         setToken(data.token);
         setUser(data.user);
-        return true;
+        return { success: true };
       } else {
         setError(data.message || 'Invalid credentials');
-        return false;
+        return { success: false, message: data.message || 'Invalid credentials' };
       }
     } catch (err) {
       setError('Server error. Please try again.');
-      return false;
+      return { success: false, message: 'Server error. Please try again.' };
+    }
+  };
+
+  const register = async (name, email, password, role) => {
+    setError(null);
+    try {
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ name, email, password, role })
+      });
+      const data = await res.json();
+      if (data.success) {
+        localStorage.setItem('token', data.token);
+        setToken(data.token);
+        setUser(data.user);
+        return { success: true };
+      } else {
+        setError(data.message || 'Registration failed');
+        return { success: false, message: data.message || 'Registration failed' };
+      }
+    } catch (err) {
+      setError('Server error during registration.');
+      return { success: false, message: 'Server error during registration.' };
     }
   };
 
@@ -96,7 +122,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, error, login, logout, apiFetch, isAuthenticated: !!user }}>
+    <AuthContext.Provider value={{ user, token, loading, error, login, logout, register, apiFetch, isAuthenticated: !!user }}>
       {children}
     </AuthContext.Provider>
   );

@@ -1,9 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { 
   Plus, Route, ShieldCheck, ShieldAlert, ArrowRight, Eye, Play, CheckCircle2, XCircle, AlertTriangle 
 } from 'lucide-react';
+import { AuthContext } from '../context/AuthContext';
 
 const Trips = ({ apiFetch }) => {
+  const { user } = useContext(AuthContext);
+  const isDispatcher = user?.role === 'Dispatcher';
+
   const [trips, setTrips] = useState([]);
   const [vehicles, setVehicles] = useState([]);
   const [drivers, setDrivers] = useState([]);
@@ -212,16 +216,18 @@ const Trips = ({ apiFetch }) => {
           <h2 className="text-xl font-bold text-white">Dispatcher Workspace</h2>
           <p className="text-xs text-[#9ca3af]">Plan, dispatch, complete, or cancel transport operations.</p>
         </div>
-        <button
-          onClick={() => {
-            setFormError('');
-            setShowCreateModal(true);
-          }}
-          className="bg-[#5bc0be] text-[#0b132b] font-bold px-4 py-2.5 rounded-xl hover:bg-[#48a9a7] hover:scale-105 transition-all flex items-center gap-2 cursor-pointer shadow-lg shadow-[#5bc0be]/10"
-        >
-          <Plus className="h-5 w-5" />
-          <span>Create Trip Request</span>
-        </button>
+        {isDispatcher && (
+          <button
+            onClick={() => {
+              setFormError('');
+              setShowCreateModal(true);
+            }}
+            className="bg-[#5bc0be] text-[#0b132b] font-bold px-4 py-2.5 rounded-xl hover:bg-[#48a9a7] hover:scale-105 transition-all flex items-center gap-2 cursor-pointer shadow-lg shadow-[#5bc0be]/10"
+          >
+            <Plus className="h-5 w-5" />
+            <span>Create Trip Request</span>
+          </button>
+        )}
       </div>
 
       {/* Global Toast Message */}
@@ -481,7 +487,7 @@ const Trips = ({ apiFetch }) => {
               <th className="p-4">Driver Details</th>
               <th className="p-4">Payload & Distance</th>
               <th className="p-4">Status</th>
-              <th className="p-4 text-right">Actions</th>
+              {isDispatcher && <th className="p-4 text-right">Actions</th>}
             </tr>
           </thead>
           <tbody className="text-xs divide-y divide-[#3a506b]/20">
@@ -518,60 +524,62 @@ const Trips = ({ apiFetch }) => {
                       {t.status}
                     </span>
                   </td>
-                  <td className="p-4 text-right">
-                    <div className="flex justify-end gap-2.5">
-                      
-                      {/* Dispatch Trigger */}
-                      {t.status === 'Draft' && (
-                        <button
-                          onClick={() => handleDispatch(t._id)}
-                          className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-lg font-bold flex items-center gap-1 cursor-pointer transition-all hover:scale-105"
-                          title="Dispatch Vehicle and Driver"
-                        >
-                          <Play className="h-3.5 w-3.5 fill-white" />
-                          <span>Dispatch</span>
-                        </button>
-                      )}
+                  {isDispatcher && (
+                    <td className="p-4 text-right">
+                      <div className="flex justify-end gap-2.5">
+                        
+                        {/* Dispatch Trigger */}
+                        {t.status === 'Draft' && (
+                          <button
+                            onClick={() => handleDispatch(t._id)}
+                            className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-lg font-bold flex items-center gap-1 cursor-pointer transition-all hover:scale-105"
+                            title="Dispatch Vehicle and Driver"
+                          >
+                            <Play className="h-3.5 w-3.5 fill-white" />
+                            <span>Dispatch</span>
+                          </button>
+                        )}
 
-                      {/* Complete Trigger */}
-                      {t.status === 'Dispatched' && (
-                        <button
-                          onClick={() => openCompleteModal(t)}
-                          className="bg-green-500 hover:bg-green-600 text-[#0b132b] px-3 py-1.5 rounded-lg font-bold flex items-center gap-1 cursor-pointer transition-all hover:scale-105"
-                          title="Record Completion and Return Assets"
-                        >
-                          <CheckCircle2 className="h-3.5 w-3.5" />
-                          <span>Complete</span>
-                        </button>
-                      )}
+                        {/* Complete Trigger */}
+                        {t.status === 'Dispatched' && (
+                          <button
+                            onClick={() => openCompleteModal(t)}
+                            className="bg-green-500 hover:bg-green-600 text-[#0b132b] px-3 py-1.5 rounded-lg font-bold flex items-center gap-1 cursor-pointer transition-all hover:scale-105"
+                            title="Record Completion and Return Assets"
+                          >
+                            <CheckCircle2 className="h-3.5 w-3.5" />
+                            <span>Complete</span>
+                          </button>
+                        )}
 
-                      {/* Cancel Action */}
-                      {(t.status === 'Draft' || t.status === 'Dispatched') && (
-                        <button
-                          onClick={() => handleCancel(t._id)}
-                          className="bg-transparent border border-red-500/30 text-red-400 hover:bg-red-500/10 px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1 cursor-pointer transition-all"
-                          title="Cancel Trip"
-                        >
-                          <XCircle className="h-3.5 w-3.5" />
-                          <span>Cancel</span>
-                        </button>
-                      )}
+                        {/* Cancel Action */}
+                        {(t.status === 'Draft' || t.status === 'Dispatched') && (
+                          <button
+                            onClick={() => handleCancel(t._id)}
+                            className="bg-transparent border border-red-500/30 text-red-400 hover:bg-red-500/10 px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1 cursor-pointer transition-all"
+                            title="Cancel Trip"
+                          >
+                            <XCircle className="h-3.5 w-3.5" />
+                            <span>Cancel</span>
+                          </button>
+                        )}
 
-                      {/* View details / Finished indicator */}
-                      {t.status === 'Completed' && (
-                        <span className="text-[10px] text-green-400 font-bold uppercase flex items-center gap-1 pr-3">
-                          <CheckCircle2 className="h-3.5 w-3.5" /> Finished
-                        </span>
-                      )}
-                      
-                      {t.status === 'Cancelled' && (
-                        <span className="text-[10px] text-red-400 font-semibold uppercase flex items-center gap-1 pr-3">
-                          <XCircle className="h-3.5 w-3.5" /> Cancelled
-                        </span>
-                      )}
+                        {/* View details / Finished indicator */}
+                        {t.status === 'Completed' && (
+                          <span className="text-[10px] text-green-400 font-bold uppercase flex items-center gap-1 pr-3">
+                            <CheckCircle2 className="h-3.5 w-3.5" /> Finished
+                          </span>
+                        )}
+                        
+                        {t.status === 'Cancelled' && (
+                          <span className="text-[10px] text-red-400 font-semibold uppercase flex items-center gap-1 pr-3">
+                            <XCircle className="h-3.5 w-3.5" /> Cancelled
+                          </span>
+                        )}
 
-                    </div>
-                  </td>
+                      </div>
+                    </td>
+                  )}
                 </tr>
               ))
             ) : (
