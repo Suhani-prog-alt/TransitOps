@@ -107,6 +107,12 @@ router.get('/analytics', auth, async (req, res) => {
         const expiring7Days = await Driver.countDocuments({ licenseExpiryDate: { $gte: now, $lt: next7Days } });
         const expiring30Days = await Driver.countDocuments({ licenseExpiryDate: { $gte: now, $lt: next30Days } });
         
+        // Calculate real safety score distribution
+        const excellent = await Driver.countDocuments({ safetyScore: { $gte: 90 } });
+        const good = await Driver.countDocuments({ safetyScore: { $gte: 80, $lt: 90 } });
+        const warning = await Driver.countDocuments({ safetyScore: { $gte: 60, $lt: 80 } });
+        const critical = await Driver.countDocuments({ safetyScore: { $lt: 60 } });
+        
         res.json({
             status: {
                 total: totalDrivers,
@@ -118,6 +124,12 @@ router.get('/analytics', auth, async (req, res) => {
                 expired: expiredLicenses,
                 expiring7Days: expiring7Days,
                 expiring30Days: expiring30Days
+            },
+            scores: {
+                excellent,
+                good,
+                warning,
+                critical
             }
         });
     } catch (err) {

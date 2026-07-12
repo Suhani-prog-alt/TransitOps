@@ -106,15 +106,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
         {/* Support Card - matches visual inspiration */}
         <div className="p-4 border-t border-[#1c2541] bg-[#0b132b]/50">
-          <div className="rounded-2xl bg-[#1c2541]/50 border border-[#3a506b]/40 p-4 flex gap-3.5 items-center">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#0b132b] border border-[#3a506b]/40 text-[#5bc0be]">
-              <HelpCircle size={20} />
+          <div 
+            className="rounded-2xl bg-[#1c2541]/50 border border-[#3a506b]/40 p-4 flex gap-3.5 items-center cursor-pointer hover:bg-red-500/10 transition-colors"
+            onClick={() => {
+              localStorage.removeItem('token');
+              window.location.href = 'http://localhost:8080';
+            }}
+          >
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#0b132b] border border-[#3a506b]/40 text-red-400">
+              <Settings size={20} />
             </div>
             <div>
-              <h4 className="text-xs font-semibold text-white">Need Help?</h4>
-              <button className="text-[11px] font-medium text-[#5bc0be] hover:underline">
-                Contact Support
-              </button>
+              <h4 className="text-xs font-semibold text-white">Log Out</h4>
+              <p className="text-[11px] font-medium text-slate-400 hover:text-red-400 transition-colors">
+                Return to portal
+              </p>
             </div>
           </div>
         </div>

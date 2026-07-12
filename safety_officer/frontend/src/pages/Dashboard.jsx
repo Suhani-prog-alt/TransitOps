@@ -7,7 +7,7 @@ import {
   Clock,
   ShieldAlert,
   Info,
-  Map
+  Map as MapIcon
 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -58,13 +58,11 @@ export function Dashboard() {
     { name: 'Valid', value: Math.max(0, analytics.status.total - analytics.licenses.expired - analytics.licenses.expiring7Days - analytics.licenses.expiring30Days), color: '#22c55e' },
   ]
 
-  // Placeholder distribution until we build full score logic on backend
   const scoreData = [
-    { name: '90-100', value: Math.floor(analytics.status.total * 0.6), color: '#22c55e' },
-    { name: '80-89', value: Math.floor(analytics.status.total * 0.2), color: '#84cc16' },
-    { name: '70-79', value: Math.floor(analytics.status.total * 0.1), color: '#eab308' },
-    { name: '60-69', value: Math.floor(analytics.status.total * 0.05), color: '#f97316' },
-    { name: '< 60', value: Math.floor(analytics.status.total * 0.05), color: '#ef4444' },
+    { name: '90-100', value: analytics.scores?.excellent || 0, color: '#22c55e' },
+    { name: '80-89', value: analytics.scores?.good || 0, color: '#84cc16' },
+    { name: '60-79', value: analytics.scores?.warning || 0, color: '#eab308' },
+    { name: '< 60', value: analytics.scores?.critical || 0, color: '#ef4444' },
   ]
 
   return (
@@ -75,7 +73,7 @@ export function Dashboard() {
         {[
           { title: "TOTAL DRIVERS", value: analytics.status.total, icon: <Users className="text-blue-500" size={24}/> },
           { title: "AVAILABLE", value: analytics.status.available, icon: <UserCheck className="text-green-500" size={24}/> },
-          { title: "ON TRIP", value: analytics.status.onTrip, icon: <Map className="text-blue-400" size={24}/> },
+          { title: "ON TRIP", value: analytics.status.onTrip, icon: <MapIcon className="text-blue-400" size={24}/> },
           { title: "SUSPENDED", value: analytics.status.suspended, icon: <UserX className="text-red-500" size={24}/> },
           { title: "EXPIRED LICENSES", value: analytics.licenses.expired, icon: <AlertTriangle className="text-red-500" size={24}/> },
           { title: "EXPIRING SOON", value: analytics.licenses.expiring7Days, icon: <Clock className="text-orange-500" size={24}/> },

@@ -8,6 +8,10 @@ import { LicenseMonitoring } from "./pages/LicenseMonitoring"
 import { DriverEligibility } from "./pages/DriverEligibility"
 import { SafetyReports } from "./pages/SafetyReports"
 
+import { Vehicles } from "./pages/Vehicles"
+import { Trips } from "./pages/Trips"
+import { Maintenance } from "./pages/Maintenance"
+
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useContext(AuthContext)
   if (loading) return <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">Loading...</div>
@@ -27,7 +31,11 @@ function AppRoutes() {
         <Route path="licenses" element={<LicenseMonitoring />} />
         <Route path="eligibility" element={<DriverEligibility />} />
         <Route path="reports" element={<SafetyReports />} />
+        <Route path="vehicles" element={<Vehicles />} />
+        <Route path="trips" element={<Trips />} />
+        <Route path="maintenance" element={<Maintenance />} />
       </Route>
+
     </Routes>
   )
 }

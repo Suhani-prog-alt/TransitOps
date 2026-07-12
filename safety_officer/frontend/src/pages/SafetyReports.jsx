@@ -80,19 +80,19 @@ export function SafetyReports() {
             <div className="space-y-4">
                <div className="flex justify-between items-center text-sm">
                  <span className="text-slate-300">Excellent (90-100)</span>
-                 <span className="font-bold text-green-500">{Math.floor(analytics.status.total * 0.6)} Drivers</span>
+                 <span className="font-bold text-green-500">{analytics.scores?.excellent || 0} Drivers</span>
                </div>
                <div className="flex justify-between items-center text-sm">
                  <span className="text-slate-300">Good (80-89)</span>
-                 <span className="font-bold text-lime-500">{Math.floor(analytics.status.total * 0.2)} Drivers</span>
+                 <span className="font-bold text-lime-500">{analytics.scores?.good || 0} Drivers</span>
                </div>
                <div className="flex justify-between items-center text-sm">
                  <span className="text-slate-300">Warning (60-79)</span>
-                 <span className="font-bold text-orange-500">{Math.floor(analytics.status.total * 0.15)} Drivers</span>
+                 <span className="font-bold text-orange-500">{analytics.scores?.warning || 0} Drivers</span>
                </div>
                <div className="flex justify-between items-center text-sm">
                  <span className="text-slate-300">Critical (&lt;60)</span>
-                 <span className="font-bold text-red-500">{Math.floor(analytics.status.total * 0.05)} Drivers</span>
+                 <span className="font-bold text-red-500">{analytics.scores?.critical || 0} Drivers</span>
                </div>
             </div>
           </CardContent>

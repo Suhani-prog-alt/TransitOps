@@ -4,7 +4,7 @@ import {
   LayoutDashboard, 
   Truck, 
   Users, 
-  Map, 
+  Map as MapIcon, 
   Wrench, 
   BarChart, 
   Settings,
@@ -25,12 +25,8 @@ const navItems = [
   ]},
   { section: "READ ONLY", items: [
     { name: "Vehicles", path: "/vehicles", icon: <Truck size={18} /> },
-    { name: "Trips", path: "/trips", icon: <Map size={18} /> },
+    { name: "Trips", path: "/trips", icon: <MapIcon size={18} /> },
     { name: "Maintenance", path: "/maintenance", icon: <Wrench size={18} /> },
-  ]},
-  { section: "ADMIN", items: [
-    { name: "Users & Roles", path: "/users", icon: <ShieldCheck size={18} /> },
-    { name: "Settings", path: "/settings", icon: <Settings size={18} /> },
   ]}
 ]
 
@@ -85,13 +81,19 @@ export function Sidebar() {
       </div>
 
       <div className="p-4 border-t border-[#1c2541] bg-[#0b132b]/50">
-        <div className="rounded-2xl bg-[#1c2541]/50 border border-[#3a506b]/40 p-4 flex gap-3.5 items-center">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#0b132b] border border-[#3a506b]/40 text-[#5bc0be]">
-             <HeadphonesIcon size={20} />
+        <div 
+          className="rounded-2xl bg-[#1c2541]/50 border border-[#3a506b]/40 p-4 flex gap-3.5 items-center cursor-pointer hover:bg-red-500/10 transition-colors"
+          onClick={() => {
+            localStorage.removeItem('token');
+            window.location.href = 'http://localhost:8080';
+          }}
+        >
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#0b132b] border border-[#3a506b]/40 text-red-400">
+             <Settings size={20} />
           </div>
           <div>
-            <p className="text-xs font-semibold text-white">Need Help?</p>
-            <p className="text-[11px] font-medium text-[#5bc0be] hover:underline cursor-pointer">Contact Support</p>
+            <p className="text-xs font-semibold text-white">Log Out</p>
+            <p className="text-[11px] font-medium text-slate-400 hover:text-red-400 transition-colors">Return to portal</p>
           </div>
         </div>
       </div>

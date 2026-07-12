@@ -26,7 +26,7 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
     { id: 'reports', label: 'Reports & Analytics', icon: FileBarChart2 }
   ].filter(item => {
     if (role === 'Dispatcher') {
-      return true;
+      return item.id !== 'expenses';
     }
     if (role === 'Fleet Manager') {
       return ['dashboard', 'vehicles', 'drivers', 'maintenance', 'expenses', 'reports'].includes(item.id);

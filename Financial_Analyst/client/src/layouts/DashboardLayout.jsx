@@ -41,7 +41,8 @@ const DashboardLayout = () => {
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    localStorage.removeItem('token');
+    window.location.href = 'http://localhost:8080';
   };
 
   const navItems = [

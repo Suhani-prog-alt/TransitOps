@@ -96,19 +96,17 @@ const Vehicles = ({ apiFetch }) => {
           <p className="text-xs text-[#9ca3af]">Manage registrations, vehicle categories, and view fleet capacities.</p>
         </div>
         
-        {/* Conditional Register Button */}
-        {isFleetManager && (
-          <button
-            onClick={() => {
-              setError('');
-              setShowAddForm(!showAddForm);
-            }}
-            className="bg-[#5bc0be] text-[#0b132b] font-bold px-4 py-2.5 rounded-xl hover:bg-[#48a9a7] hover:scale-105 transition-all flex items-center gap-2 cursor-pointer shadow-lg shadow-[#5bc0be]/10"
-          >
-            <Plus className="h-5 w-5" />
-            <span>Register Vehicle</span>
-          </button>
-        )}
+        {/* Register Button */}
+        <button
+          onClick={() => {
+            setError('');
+            setShowAddForm(!showAddForm);
+          }}
+          className="bg-[#5bc0be] text-[#0b132b] font-bold px-4 py-2.5 rounded-xl hover:bg-[#48a9a7] hover:scale-105 transition-all flex items-center gap-2 cursor-pointer shadow-lg shadow-[#5bc0be]/10"
+        >
+          <Plus className="h-5 w-5" />
+          <span>Register Vehicle</span>
+        </button>
       </div>
 
       {success && (
@@ -118,8 +116,8 @@ const Vehicles = ({ apiFetch }) => {
         </div>
       )}
 
-      {/* Conditional Add Form */}
-      {isFleetManager && showAddForm && (
+      {/* Add Form */}
+      {showAddForm && (
         <div className="bg-[#1c2541]/80 border border-[#3a506b] rounded-2xl p-6 shadow-xl animate-fade-in">
           <h3 className="font-bold text-white uppercase tracking-wider text-xs mb-4 flex items-center gap-2">
             <Truck className="h-4.5 w-4.5 text-[#5bc0be]" />
@@ -255,7 +253,7 @@ const Vehicles = ({ apiFetch }) => {
               </div>
               <div className="flex justify-between">
                 <span>Cost Value:</span>
-                <strong className="text-white">₹{v.acquisitionCost.toLocaleString()}</strong>
+                <strong className="text-white">₹{(v.acquisitionCost || 0).toLocaleString()}</strong>
               </div>
             </div>
           </div>

@@ -446,8 +446,8 @@ export const VehicleRegistry: React.FC = () => {
                     </div>
                   </TableCell>
                   <TableCell className="text-xs font-semibold text-gray-400">{v.type}</TableCell>
-                  <TableCell className="text-xs font-mono">{v.currentOdometer.toLocaleString()} km</TableCell>
-                  <TableCell className="text-xs font-mono">₹{v.purchaseCost.toLocaleString()}</TableCell>
+                  <TableCell className="text-xs font-mono">{(v.currentOdometer || 0).toLocaleString()} km</TableCell>
+                  <TableCell className="text-xs font-mono">₹{(v.purchaseCost || 0).toLocaleString()}</TableCell>
                   <TableCell>
                     <Badge variant="purple">{v.region}</Badge>
                   </TableCell>

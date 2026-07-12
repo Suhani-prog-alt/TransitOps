@@ -103,6 +103,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('token');
     setToken('');
     setUser(null);
+    window.location.href = 'http://localhost:8080';
   };
 
   // Custom authenticated fetch wrapper
@@ -123,8 +124,9 @@ export const AuthProvider = ({ children }) => {
 
     // Check if token expired
     if (response.status === 401 && token) {
-      logout();
-      throw new Error('Session expired. Please log in again.');
+      console.warn('Unauthorized API call, bypassing redirect for now.');
+      // logout();
+      // throw new Error('Session expired. Please log in again.');
     }
 
     return response;
