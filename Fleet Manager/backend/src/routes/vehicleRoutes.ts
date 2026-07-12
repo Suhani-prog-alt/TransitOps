@@ -4,7 +4,6 @@ import { authenticateJWT } from '../middleware/auth';
 
 const router = Router();
 
-// Apply JWT authentication to all vehicle endpoints
 router.use(authenticateJWT);
 
 router.get('/', getVehicles);

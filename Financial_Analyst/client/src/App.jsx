@@ -2,7 +2,6 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import DashboardLayout from './layouts/DashboardLayout';
-import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import FuelLogs from './pages/FuelLogs';
 import ExpenseLogs from './pages/ExpenseLogs';
@@ -28,7 +27,8 @@ const ProtectedRoute = ({ children }) => {
   }
 
   if (!user) {
-    return <Navigate to="/login" replace />;
+    window.location.href = "http://localhost:8080";
+    return null;
   }
 
   return children;
@@ -39,9 +39,6 @@ function App() {
     <AuthProvider>
       <Router>
         <Routes>
-          {/* Public login route */}
-          <Route path="/login" element={<Login />} />
-
           {/* Protected MERN application routes */}
           <Route
             path="/"

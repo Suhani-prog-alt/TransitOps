@@ -6,7 +6,6 @@ import { Sidebar } from './components/Sidebar';
 import { Navbar } from './components/Navbar';
 
 // Page Imports
-import { Login } from './pages/Login';
 import { Dashboard } from './pages/Dashboard';
 import { VehicleRegistry } from './pages/VehicleRegistry';
 import { VehicleDetails } from './pages/VehicleDetails';
@@ -16,7 +15,6 @@ import { Reports } from './pages/Reports';
 import { Alerts } from './pages/Alerts';
 import { Settings } from './pages/Settings';
 
-// Protected Route Wrapper Component
 const ProtectedRoute = () => {
   const { token, loading } = useAuth();
 
@@ -29,7 +27,8 @@ const ProtectedRoute = () => {
   }
 
   if (!token) {
-    return <Navigate to="/login" replace />;
+    window.location.href = "http://localhost:8080";
+    return null;
   }
 
   return <Outlet />;
@@ -65,9 +64,6 @@ export const App = () => {
       <AuthProvider>
         <FilterProvider>
           <Routes>
-            {/* Public route */}
-            <Route path="/login" element={<Login />} />
-
             {/* Protected Routes */}
             <Route element={<ProtectedRoute />}>
               <Route element={<AppLayout />}>

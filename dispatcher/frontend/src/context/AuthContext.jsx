@@ -4,7 +4,16 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('token') || '');
+  const [token, setToken] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    const urlToken = params.get('token');
+    if (urlToken) {
+      localStorage.setItem('token', urlToken);
+      window.history.replaceState({}, document.title, window.location.pathname);
+      return urlToken;
+    }
+    return localStorage.getItem('token') || '';
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 

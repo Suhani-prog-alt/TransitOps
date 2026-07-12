@@ -7,18 +7,20 @@ import { Drivers } from "./pages/Drivers"
 import { LicenseMonitoring } from "./pages/LicenseMonitoring"
 import { DriverEligibility } from "./pages/DriverEligibility"
 import { SafetyReports } from "./pages/SafetyReports"
-import { Login } from "./pages/Login"
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useContext(AuthContext)
   if (loading) return <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">Loading...</div>
-  return user ? children : <Navigate to="/login" />
+  if (!user) {
+    window.location.href = "http://localhost:8080";
+    return null;
+  }
+  return children;
 }
 
 function AppRoutes() {
   return (
     <Routes>
-      <Route path="/login" element={<Login />} />
       <Route path="/" element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
         <Route index element={<Dashboard />} />
         <Route path="drivers" element={<Drivers />} />

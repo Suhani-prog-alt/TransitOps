@@ -9,7 +9,15 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const token = localStorage.getItem('token');
+      const params = new URLSearchParams(window.location.search);
+      const urlToken = params.get('token');
+      let token = urlToken || localStorage.getItem('token');
+      
+      if (urlToken) {
+        localStorage.setItem('token', urlToken);
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+
       if (token) {
         try {
           const res = await api.get('/auth/me');

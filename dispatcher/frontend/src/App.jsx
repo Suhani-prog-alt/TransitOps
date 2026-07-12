@@ -1,6 +1,5 @@
 import React, { useState, useContext } from 'react';
 import { AuthProvider, AuthContext } from './context/AuthContext';
-import Login from './pages/Login';
 import Sidebar from './components/Sidebar';
 import Navbar from './components/Navbar';
 import Dashboard from './pages/Dashboard';
@@ -24,7 +23,8 @@ const MainAppContent = () => {
   }
 
   if (!isAuthenticated) {
-    return <Login />;
+    window.location.href = "http://localhost:8080";
+    return null;
   }
 
   const renderActivePage = () => {

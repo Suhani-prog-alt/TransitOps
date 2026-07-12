@@ -14,8 +14,6 @@ interface AuthContextType {
   user: User | null;
   token: string | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string, region: string) => Promise<void>;
   logout: () => void;
   updateUserProfile: (updatedUser: Partial<User>) => void;
 }
@@ -23,56 +21,50 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-
-  useEffect(() => {
-    const storedToken = localStorage.getItem('transitops_token');
+  const [user, setUser] = useState<User | null>(() => {
     const storedUser = localStorage.getItem('transitops_user');
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
 
-    if (storedToken && storedUser) {
-      setToken(storedToken);
-      setUser(JSON.parse(storedUser));
+  const [token, setToken] = useState<string | null>(() => {
+    // Check URL first (coming from portal SSO redirect)
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlToken = urlParams.get('token');
+    if (urlToken) {
+      localStorage.setItem('transitops_token', urlToken);
+      // Clean token from URL bar immediately
+      window.history.replaceState({}, document.title, window.location.pathname);
+      return urlToken;
     }
-    setLoading(false);
+    return localStorage.getItem('transitops_token');
+  });
+
+  const [loading, setLoading] = useState<boolean>(false);
+
+  // If token came from URL but we have no user yet, fetch profile
+  useEffect(() => {
+    if (token && !user) {
+      setLoading(true);
+      API.get('/auth/me', { headers: { Authorization: `Bearer ${token}` } })
+        .then((res) => {
+          const userData = res.data;
+          localStorage.setItem('transitops_user', JSON.stringify(userData));
+          setUser(userData);
+        })
+        .catch(() => {
+          // Profile fetch failed — keep token; pages will show with limited user data
+        })
+        .finally(() => setLoading(false));
+    }
   }, []);
 
-  const login = async (email: string, password: string) => {
-    try {
-      const response = await API.post('/auth/login', { email, password });
-      const { token: receivedToken, user: receivedUser } = response.data;
-      
-      localStorage.setItem('transitops_token', receivedToken);
-      localStorage.setItem('transitops_user', JSON.stringify(receivedUser));
-      
-      setToken(receivedToken);
-      setUser(receivedUser);
-    } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Login failed');
-    }
-  };
-
-  const register = async (name: string, email: string, password: string, region: string) => {
-    try {
-      const response = await API.post('/auth/register', { name, email, password, region });
-      const { token: receivedToken, user: receivedUser } = response.data;
-
-      localStorage.setItem('transitops_token', receivedToken);
-      localStorage.setItem('transitops_user', JSON.stringify(receivedUser));
-
-      setToken(receivedToken);
-      setUser(receivedUser);
-    } catch (error: any) {
-      throw new Error(error.response?.data?.message || 'Registration failed');
-    }
-  };
 
   const logout = () => {
     localStorage.removeItem('transitops_token');
     localStorage.removeItem('transitops_user');
     setToken(null);
     setUser(null);
+    window.location.href = 'http://localhost:8080';
   };
 
   const updateUserProfile = (updatedUser: Partial<User>) => {
@@ -84,7 +76,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, register, logout, updateUserProfile }}>
+    <AuthContext.Provider value={{ user, token, loading, logout, updateUserProfile }}>
       {children}
     </AuthContext.Provider>
   );
