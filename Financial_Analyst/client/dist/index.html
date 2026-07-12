@@ -14,10 +14,18 @@
         font-family: 'Outfit', 'Inter', sans-serif;
       }
     </style>
-    <script type="module" crossorigin src="/assets/index-BKs_r-sE.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-CwDQq7kz.css">
-  </head>
+    <script>
+    const params = new URLSearchParams(window.location.search);
+    const urlToken = params.get('token');
+    if (urlToken) {
+      localStorage.setItem('token', urlToken);
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  </script>
+  <script type="module" crossorigin src="/assets/index-Dky_Zq7h.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-C3LCISL7.css">
+</head>
   <body class="bg-darkBg text-gray-200 antialiased min-h-screen">
-    <div id="root"></div>
+    <div id="root"></div>
   </body>
 </html>
