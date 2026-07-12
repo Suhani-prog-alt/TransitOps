@@ -64,20 +64,21 @@ const DashboardLayout = () => {
     <div className="flex min-h-screen bg-[#080d1a] text-slate-100 overflow-x-hidden">
       
       {/* SIDEBAR */}
-      <aside className="w-64 glass-panel border-r border-darkBorder hidden md:flex flex-col z-20 sticky top-0 h-screen">
-        {/* Brand Logo */}
-        <div className="p-6 border-b border-darkBorder flex items-center space-x-3">
-          <div className="p-2 bg-gradient-to-tr from-accentCyan to-accentGreen rounded-xl text-darkBg shadow-glow">
-            <Truck size={24} className="text-white" />
+      <aside className="w-64 bg-[#0e1731] border-r border-[#1c2541] hidden md:flex flex-col z-20 sticky top-0 h-screen">
+        {/* Brand Logo Header */}
+        <div className="p-6 border-b border-[#1c2541] flex items-center gap-3">
+          <div className="bg-gradient-to-tr from-[#5bc0be] to-[#3a506b] p-2 rounded-lg">
+            <Truck className="h-6 w-6 text-[#0b132b] font-bold" />
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-wider text-white">Transit<span className="text-accentCyan">Ops</span></h1>
-            <p className="text-[10px] text-gray-500 uppercase tracking-widest">Financial Analyst</p>
+            <h2 className="text-xl font-bold tracking-wider text-white">TRANSIT<span className="text-[#5bc0be]">OPS</span></h2>
+            <p className="text-[10px] text-[#5bc0be] uppercase tracking-widest font-bold">Financial Analyst</p>
           </div>
         </div>
 
         {/* Navigation Items */}
-        <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
+        <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+          <span className="text-[10px] font-bold text-[#3a506b] uppercase tracking-wider pl-2 block mb-3">Operations</span>
           {navItems.map((item) => {
             const isActive = location.pathname === item.path;
             const IconComponent = item.icon;
@@ -86,32 +87,39 @@ const DashboardLayout = () => {
               <Link
                 key={item.name}
                 to={item.path}
-                className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-300 group ${
+                className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-xl transition-all duration-200 cursor-pointer ${
                   isActive
-                    ? 'bg-gradient-to-r from-accentCyan/15 to-transparent text-white border-l-4 border-accentCyan shadow-inner'
-                    : 'text-gray-400 hover:text-white hover:bg-white/5'
+                    ? 'bg-[#5bc0be] text-[#0b132b] font-semibold shadow-md shadow-[#5bc0be]/10'
+                    : 'text-[#9ca3af] hover:bg-[#1c2541] hover:text-white'
                 }`}
               >
                 <IconComponent
                   size={18}
-                  className={`transition-colors duration-300 ${
-                    isActive ? 'text-accentCyan' : 'text-gray-400 group-hover:text-white'
-                  }`}
+                  className={isActive ? 'text-[#0b132b]' : 'text-[#9ca3af]'}
                 />
-                <span className="text-sm font-medium">{item.name}</span>
+                <span className="text-sm">{item.name}</span>
               </Link>
             );
           })}
         </nav>
 
         {/* Sidebar Footer */}
-        <div className="p-4 border-t border-darkBorder">
+        <div className="p-4 border-t border-[#1c2541] bg-[#0b132b]/50">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="h-10 w-10 rounded-full bg-[#1c2541] border border-[#3a506b] flex items-center justify-center font-bold text-[#5bc0be]">
+              FA
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-semibold text-white truncate">{user?.username || 'Analyst'}</p>
+              <p className="text-xs text-[#9ca3af] truncate">Financial Analyst</p>
+            </div>
+          </div>
           <button
             onClick={handleLogout}
-            className="flex items-center space-x-3 w-full px-4 py-3 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-xl transition-all duration-300"
+            className="w-full flex items-center justify-center gap-2 bg-[#1c2541]/50 border border-[#3a506b]/40 text-[#ef4444] px-4 py-2 rounded-xl hover:bg-red-500/10 hover:border-red-500/30 transition-all cursor-pointer text-xs font-semibold"
           >
-            <LogOut size={18} />
-            <span className="text-sm font-medium">Logout</span>
+            <LogOut size={14} />
+            <span>Sign Out</span>
           </button>
         </div>
       </aside>
