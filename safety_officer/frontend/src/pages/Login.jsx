@@ -29,7 +29,7 @@ export function Login() {
       {/* Left Side - Info Panel */}
       <div className="w-1/2 bg-[#d8dce3] p-12 flex flex-col relative">
         <div className="mt-10 ml-10">
-          <div className="w-12 h-12 bg-amber-600/80 rounded-md grid grid-cols-4 grid-rows-4 gap-0.5 p-1 mb-4">
+          <div className="w-12 h-12 bg-blue-600/80 rounded-md grid grid-cols-4 grid-rows-4 gap-0.5 p-1 mb-4">
              {/* Simple grid pattern for the logo approximation */}
              {[...Array(16)].map((_, i) => <div key={i} className="bg-[#d8dce3]/30 rounded-[1px]"></div>)}
           </div>
@@ -40,16 +40,16 @@ export function Login() {
             <h2 className="text-lg font-bold text-slate-800 mb-4">One login, four roles:</h2>
             <ul className="space-y-3">
               <li className="flex items-center gap-3 text-slate-700 font-medium">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-600"></span> Fleet Manager
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-600"></span> Fleet Manager
               </li>
               <li className="flex items-center gap-3 text-slate-700 font-medium">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-600"></span> Dispatcher
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-600"></span> Dispatcher
               </li>
               <li className="flex items-center gap-3 text-slate-700 font-medium">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-600"></span> Safety Officer
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-600"></span> Safety Officer
               </li>
               <li className="flex items-center gap-3 text-slate-700 font-medium">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-600"></span> Financial Analyst
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-600"></span> Financial Analyst
               </li>
             </ul>
           </div>
@@ -83,8 +83,8 @@ export function Login() {
                 type="email" 
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="safety@transitops.in" 
-                className="bg-transparent border-slate-700 text-white placeholder:text-slate-600 h-11 focus-visible:ring-amber-600 focus-visible:border-amber-600"
+                placeholder="safety@transitops.com" 
+                className="bg-transparent border-slate-700 text-white placeholder:text-slate-600 h-11 focus-visible:ring-blue-600 focus-visible:border-blue-600"
                 required
               />
             </div>
@@ -96,7 +96,7 @@ export function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••" 
-                className="bg-transparent border-slate-700 text-white placeholder:text-slate-600 h-11 focus-visible:ring-amber-600 focus-visible:border-amber-600"
+                className="bg-transparent border-slate-700 text-white placeholder:text-slate-600 h-11 focus-visible:ring-blue-600 focus-visible:border-blue-600"
                 required
               />
             </div>
@@ -106,7 +106,7 @@ export function Login() {
               <select 
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
-                className="flex h-11 w-full rounded-md border border-slate-700 bg-transparent px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-amber-600 focus:border-amber-600 appearance-none"
+                className="flex h-11 w-full rounded-md border border-slate-700 bg-transparent px-3 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600 appearance-none"
               >
                 <option value="Fleet Manager" className="bg-slate-900">Fleet Manager</option>
                 <option value="Dispatcher" className="bg-slate-900">Dispatcher</option>
@@ -126,7 +126,7 @@ export function Login() {
               <a href="#" className="text-sm text-blue-400 hover:text-blue-300 transition-colors">Forgot password?</a>
             </div>
 
-            <Button type="submit" className="w-full bg-[#b4690e] hover:bg-[#9a580c] text-white font-medium h-11 mt-2">
+            <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium h-11 mt-2">
               Sign In
             </Button>
           </form>
