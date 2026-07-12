@@ -1,21 +1,176 @@
-import { Users } from "lucide-react"
+import { useState } from "react"
+import { Users, Plus } from "lucide-react"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import * as z from "zod"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
 
-const drivers = [
+const formSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  license: z.string().min(5, "License number is required"),
+  category: z.string().min(2, "Category is required"),
+  expiry: z.string().refine((date) => new Date(date) > new Date(), {
+    message: "License must not be expired",
+  }),
+  contact: z.string().min(10, "Contact number is invalid"),
+})
+
+const initialDrivers = [
   { id: "DRV-101", name: "Alex Johnson", license: "DL-192837", category: "Heavy", expiry: "2025-06-15", status: "Available", score: 98 },
   { id: "DRV-102", name: "Ravi Kumar", license: "DL-938472", category: "Heavy", expiry: "2025-05-18", status: "On Trip", score: 85 },
   { id: "DRV-103", name: "Suresh Patel", license: "DL-456789", category: "Light", expiry: "2024-12-01", status: "Suspended", score: 45 },
 ]
 
 export function Drivers() {
+  const [drivers, setDrivers] = useState(initialDrivers)
+  const [isOpen, setIsOpen] = useState(false)
+
+  const form = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: "",
+      license: "",
+      category: "Heavy",
+      expiry: "",
+      contact: "",
+    },
+  })
+
+  function onSubmit(values) {
+    const newDriver = {
+      id: `DRV-${Math.floor(Math.random() * 900) + 100}`,
+      name: values.name,
+      license: values.license,
+      category: values.category,
+      expiry: values.expiry,
+      status: "Available",
+      score: 100, // new drivers start at 100
+    }
+    setDrivers([newDriver, ...drivers])
+    setIsOpen(false)
+    form.reset()
+  }
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-white">Driver Management</h1>
-        <Button className="bg-blue-600 hover:bg-blue-700 text-white">Add New Driver</Button>
+        
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+          <DialogTrigger asChild>
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white gap-2">
+              <Plus size={16} /> Add New Driver
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="bg-slate-900 text-white border-slate-800">
+            <DialogHeader>
+              <DialogTitle>Add New Driver</DialogTitle>
+              <DialogDescription className="text-slate-400">
+                Register a new driver to the fleet. The license must be currently valid.
+              </DialogDescription>
+            </DialogHeader>
+
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Full Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="John Doe" className="bg-slate-800 border-slate-700 text-white" {...field} />
+                      </FormControl>
+                      <FormMessage className="text-red-400" />
+                    </FormItem>
+                  )}
+                />
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="license"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>License Number</FormLabel>
+                        <FormControl>
+                          <Input placeholder="DL-XXXXXX" className="bg-slate-800 border-slate-700 text-white" {...field} />
+                        </FormControl>
+                        <FormMessage className="text-red-400" />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="category"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Category</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Heavy / Light" className="bg-slate-800 border-slate-700 text-white" {...field} />
+                        </FormControl>
+                        <FormMessage className="text-red-400" />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="expiry"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>License Expiry Date</FormLabel>
+                        <FormControl>
+                          <Input type="date" className="bg-slate-800 border-slate-700 text-white" {...field} />
+                        </FormControl>
+                        <FormMessage className="text-red-400" />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="contact"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Contact Number</FormLabel>
+                        <FormControl>
+                          <Input placeholder="+1234567890" className="bg-slate-800 border-slate-700 text-white" {...field} />
+                        </FormControl>
+                        <FormMessage className="text-red-400" />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                
+                <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white">Save Driver</Button>
+              </form>
+            </Form>
+
+          </DialogContent>
+        </Dialog>
+
       </div>
 
       <Card className="bg-slate-900 border-slate-800">
