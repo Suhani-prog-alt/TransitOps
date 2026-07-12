@@ -1,22 +1,38 @@
+import { useState, useEffect } from "react"
 import { Download, FileText, ShieldAlert } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-
-const safetyData = [
-  { driverId: "DRV-101", name: "Alex Johnson", licenseExpiry: "2024-05-14", safetyScore: 98, status: "Available" },
-  { driverId: "DRV-102", name: "Michael Chang", licenseExpiry: "2024-05-30", safetyScore: 85, status: "Available" },
-  { driverId: "DRV-103", name: "Priya Patel", licenseExpiry: "2024-06-15", safetyScore: 72, status: "Available" },
-  { driverId: "DRV-104", name: "Ravi Kumar", licenseExpiry: "2025-05-18", safetyScore: 88, status: "On Trip" },
-  { driverId: "DRV-105", name: "John Smith", licenseExpiry: "2025-08-22", safetyScore: 55, status: "Suspended" },
-]
+import api from "../lib/api"
 
 export function SafetyReports() {
+  const [safetyData, setSafetyData] = useState([])
+  const [analytics, setAnalytics] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [driversRes, analyticsRes] = await Promise.all([
+          api.get('/drivers'),
+          api.get('/drivers/analytics')
+        ])
+        setSafetyData(driversRes.data)
+        setAnalytics(analyticsRes.data)
+      } catch (err) {
+        console.error(err)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchData()
+  }, [])
 
   const handleExportCSV = () => {
-    // Basic CSV generation
-    const headers = "Driver ID,Name,License Expiry,Safety Score,Status\n"
+    if (!safetyData.length) return
+
+    const headers = "Driver ID,Name,License Expiry,Safety Score,Status,Trips Count\n"
     const csvContent = safetyData.map(row => 
-      `${row.driverId},${row.name},${row.licenseExpiry},${row.safetyScore},${row.status}`
+      `${row.driverId},${row.name},${new Date(row.licenseExpiryDate).toLocaleDateString()},${row.safetyScore},${row.status},${row.tripsCount || 0}`
     ).join("\n")
 
     const fullCsv = headers + csvContent
@@ -29,6 +45,10 @@ export function SafetyReports() {
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
+  }
+
+  if (loading || !analytics) {
+    return <div className="text-white">Loading reports...</div>
   }
 
   return (
@@ -60,19 +80,19 @@ export function SafetyReports() {
             <div className="space-y-4">
                <div className="flex justify-between items-center text-sm">
                  <span className="text-slate-300">Excellent (90-100)</span>
-                 <span className="font-bold text-green-500">45 Drivers</span>
+                 <span className="font-bold text-green-500">{Math.floor(analytics.status.total * 0.6)} Drivers</span>
                </div>
                <div className="flex justify-between items-center text-sm">
                  <span className="text-slate-300">Good (80-89)</span>
-                 <span className="font-bold text-lime-500">25 Drivers</span>
+                 <span className="font-bold text-lime-500">{Math.floor(analytics.status.total * 0.2)} Drivers</span>
                </div>
                <div className="flex justify-between items-center text-sm">
                  <span className="text-slate-300">Warning (60-79)</span>
-                 <span className="font-bold text-orange-500">14 Drivers</span>
+                 <span className="font-bold text-orange-500">{Math.floor(analytics.status.total * 0.15)} Drivers</span>
                </div>
                <div className="flex justify-between items-center text-sm">
                  <span className="text-slate-300">Critical (&lt;60)</span>
-                 <span className="font-bold text-red-500">2 Drivers</span>
+                 <span className="font-bold text-red-500">{Math.floor(analytics.status.total * 0.05)} Drivers</span>
                </div>
             </div>
           </CardContent>
@@ -92,19 +112,19 @@ export function SafetyReports() {
             <div className="space-y-4">
                <div className="flex justify-between items-center text-sm">
                  <span className="text-slate-300">Expired</span>
-                 <span className="font-bold text-red-500">2 Drivers</span>
+                 <span className="font-bold text-red-500">{analytics.licenses.expired} Drivers</span>
                </div>
                <div className="flex justify-between items-center text-sm">
                  <span className="text-slate-300">Expiring in &lt; 7 Days</span>
-                 <span className="font-bold text-orange-500">7 Drivers</span>
+                 <span className="font-bold text-orange-500">{analytics.licenses.expiring7Days} Drivers</span>
                </div>
                <div className="flex justify-between items-center text-sm">
                  <span className="text-slate-300">Expiring in &lt; 30 Days</span>
-                 <span className="font-bold text-yellow-500">12 Drivers</span>
+                 <span className="font-bold text-yellow-500">{analytics.licenses.expiring30Days} Drivers</span>
                </div>
                <div className="flex justify-between items-center text-sm">
                  <span className="text-slate-300">Valid</span>
-                 <span className="font-bold text-green-500">65 Drivers</span>
+                 <span className="font-bold text-green-500">{Math.max(0, analytics.status.total - analytics.licenses.expired - analytics.licenses.expiring7Days - analytics.licenses.expiring30Days)} Drivers</span>
                </div>
             </div>
           </CardContent>

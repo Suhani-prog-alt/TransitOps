@@ -1,15 +1,47 @@
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-
-const ineligibleDrivers = [
-  { driver: "Alex Johnson", license: "DL-192837", reason: "License Expired", severity: "High" },
-  { driver: "John Smith", license: "DL-558291", reason: "Suspended", severity: "High" },
-  { driver: "Suresh Patel", license: "DL-456789", reason: "Safety Score Below 60", severity: "Medium" },
-  { driver: "Ravi Kumar", license: "DL-938472", reason: "Already On Trip", severity: "Low" },
-]
+import api from "../lib/api"
 
 export function DriverEligibility() {
+  const [ineligibleDrivers, setIneligibleDrivers] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchEligibility = async () => {
+      try {
+        const res = await api.get('/drivers/eligibility')
+        // Process reasons and severity based on data
+        const processed = res.data.map(driver => {
+          let reason = ''
+          let severity = 'Medium'
+          
+          if (new Date(driver.licenseExpiryDate) < new Date()) {
+            reason = 'License Expired'
+            severity = 'High'
+          } else if (driver.status === 'Suspended') {
+            reason = 'Suspended'
+            severity = 'High'
+          }
+          
+          return {
+            ...driver,
+            reason,
+            severity
+          }
+        })
+        setIneligibleDrivers(processed)
+      } catch (err) {
+        console.error(err)
+      } finally {
+        setLoading(false)
+      }
+    }
+    
+    fetchEligibility()
+  }, [])
+
   return (
     <div className="flex flex-col gap-6">
       <div>
@@ -37,10 +69,14 @@ export function DriverEligibility() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {ineligibleDrivers.map((item, idx) => (
-                <TableRow key={idx} className="border-slate-800 hover:bg-slate-800/50 transition-colors text-slate-300">
-                  <TableCell className="font-medium text-white">{item.driver}</TableCell>
-                  <TableCell>{item.license}</TableCell>
+              {loading ? (
+                <TableRow><TableCell colSpan={4} className="text-center py-4 text-slate-500">Loading...</TableCell></TableRow>
+              ) : ineligibleDrivers.length === 0 ? (
+                <TableRow><TableCell colSpan={4} className="text-center py-4 text-slate-500">All drivers are eligible.</TableCell></TableRow>
+              ) : ineligibleDrivers.map((item) => (
+                <TableRow key={item._id} className="border-slate-800 hover:bg-slate-800/50 transition-colors text-slate-300">
+                  <TableCell className="font-medium text-white">{item.name}</TableCell>
+                  <TableCell>{item.licenseNumber}</TableCell>
                   <TableCell>
                      <Badge variant="outline" className={`border-none ${
                         item.reason === 'License Expired' || item.reason === 'Suspended' ? 'bg-red-500/10 text-red-500' : 

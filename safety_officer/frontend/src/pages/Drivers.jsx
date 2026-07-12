@@ -1,8 +1,9 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Users, Plus } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
+import api from "../lib/api"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
@@ -27,48 +28,59 @@ import { Input } from "@/components/ui/input"
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
-  license: z.string().min(5, "License number is required"),
-  category: z.string().min(2, "Category is required"),
-  expiry: z.string().refine((date) => new Date(date) > new Date(), {
+  licenseNumber: z.string().min(5, "License number is required"),
+  licenseCategory: z.string().min(2, "Category is required"),
+  licenseExpiryDate: z.string().refine((date) => new Date(date) > new Date(), {
     message: "License must not be expired",
   }),
-  contact: z.string().min(10, "Contact number is invalid"),
+  contactNumber: z.string().min(10, "Contact number is invalid"),
 })
 
-const initialDrivers = [
-  { id: "DRV-101", name: "Alex Johnson", license: "DL-192837", category: "Heavy", expiry: "2025-06-15", status: "Available", score: 98 },
-  { id: "DRV-102", name: "Ravi Kumar", license: "DL-938472", category: "Heavy", expiry: "2025-05-18", status: "On Trip", score: 85 },
-  { id: "DRV-103", name: "Suresh Patel", license: "DL-456789", category: "Light", expiry: "2024-12-01", status: "Suspended", score: 45 },
-]
-
 export function Drivers() {
-  const [drivers, setDrivers] = useState(initialDrivers)
+  const [drivers, setDrivers] = useState([])
   const [isOpen, setIsOpen] = useState(false)
+  const [loading, setLoading] = useState(true)
+
+  const fetchDrivers = async () => {
+    try {
+      const res = await api.get('/drivers')
+      setDrivers(res.data)
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchDrivers()
+  }, [])
 
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      license: "",
-      category: "Heavy",
-      expiry: "",
-      contact: "",
+      licenseNumber: "",
+      licenseCategory: "Heavy",
+      licenseExpiryDate: "",
+      contactNumber: "",
     },
   })
 
-  function onSubmit(values) {
-    const newDriver = {
-      id: `DRV-${Math.floor(Math.random() * 900) + 100}`,
-      name: values.name,
-      license: values.license,
-      category: values.category,
-      expiry: values.expiry,
-      status: "Available",
-      score: 100, // new drivers start at 100
+  async function onSubmit(values) {
+    try {
+      const payload = {
+        ...values,
+        driverId: `DRV-${Math.floor(Math.random() * 900) + 100}`, // Temp ID generator
+      }
+      await api.post('/drivers', payload)
+      await fetchDrivers()
+      setIsOpen(false)
+      form.reset()
+    } catch (err) {
+      console.error(err)
+      alert(err.response?.data?.msg || 'Error adding driver')
     }
-    setDrivers([newDriver, ...drivers])
-    setIsOpen(false)
-    form.reset()
   }
 
   return (
@@ -109,7 +121,7 @@ export function Drivers() {
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
-                    name="license"
+                    name="licenseNumber"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>License Number</FormLabel>
@@ -122,7 +134,7 @@ export function Drivers() {
                   />
                   <FormField
                     control={form.control}
-                    name="category"
+                    name="licenseCategory"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Category</FormLabel>
@@ -138,7 +150,7 @@ export function Drivers() {
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
-                    name="expiry"
+                    name="licenseExpiryDate"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>License Expiry Date</FormLabel>
@@ -151,7 +163,7 @@ export function Drivers() {
                   />
                   <FormField
                     control={form.control}
-                    name="contact"
+                    name="contactNumber"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Contact Number</FormLabel>
@@ -186,24 +198,28 @@ export function Drivers() {
                 <TableHead className="text-slate-400">License No.</TableHead>
                 <TableHead className="text-slate-400">Expiry Date</TableHead>
                 <TableHead className="text-slate-400">Safety Score</TableHead>
+                <TableHead className="text-slate-400">Trips</TableHead>
                 <TableHead className="text-slate-400">Status</TableHead>
                 <TableHead className="text-slate-400 text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {drivers.map((driver) => (
-                <TableRow key={driver.id} className="border-slate-800 hover:bg-slate-800/50 transition-colors text-slate-300">
-                  <TableCell className="font-medium text-white">{driver.id}</TableCell>
+              {loading ? (
+                <TableRow><TableCell colSpan={8} className="text-center">Loading drivers...</TableCell></TableRow>
+              ) : drivers.map((driver) => (
+                <TableRow key={driver._id} className="border-slate-800 hover:bg-slate-800/50 transition-colors text-slate-300">
+                  <TableCell className="font-medium text-white">{driver.driverId}</TableCell>
                   <TableCell>{driver.name}</TableCell>
-                  <TableCell>{driver.license}</TableCell>
-                  <TableCell className={new Date(driver.expiry) < new Date() ? "text-red-500 font-semibold" : ""}>
-                    {driver.expiry}
+                  <TableCell>{driver.licenseNumber}</TableCell>
+                  <TableCell className={new Date(driver.licenseExpiryDate) < new Date() ? "text-red-500 font-semibold" : ""}>
+                    {new Date(driver.licenseExpiryDate).toLocaleDateString()}
                   </TableCell>
                   <TableCell>
-                    <span className={`px-2 py-1 rounded-md text-xs font-bold ${driver.score > 90 ? 'bg-green-500/10 text-green-500' : driver.score < 60 ? 'bg-red-500/10 text-red-500' : 'bg-orange-500/10 text-orange-500'}`}>
-                      {driver.score} / 100
+                    <span className={`px-2 py-1 rounded-md text-xs font-bold ${driver.safetyScore > 90 ? 'bg-green-500/10 text-green-500' : driver.safetyScore < 60 ? 'bg-red-500/10 text-red-500' : 'bg-orange-500/10 text-orange-500'}`}>
+                      {driver.safetyScore} / 100
                     </span>
                   </TableCell>
+                  <TableCell>{driver.tripsCount || 0}</TableCell>
                   <TableCell>
                     <Badge className={
                       driver.status === 'Available' ? 'bg-green-500/10 text-green-500 hover:bg-green-500/20' : 
